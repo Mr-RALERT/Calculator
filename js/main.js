@@ -14,6 +14,8 @@ document.querySelector("body > div").appendChild(spOpr)
 // Start Valubers :
 
 let dot = false;
+let screenSolut = false;
+
 
 
 
@@ -24,6 +26,12 @@ let dot = false;
 // Start Nums Clicked : 
 nums.forEach((num) => {
     num.addEventListener("click",(e) => {
+        // If screen.innerHTML Is result
+        if (screenSolut == true) {
+            screen.innerHTML = ""
+            spOpr.innerHTML = ""
+            screenSolut = false;
+        }
 
         // If Btn Value Is Number [0-9] :
         if (parseInt(e.target.dataset.num) || e.target.dataset.num == "0") {
@@ -62,64 +70,82 @@ nums.forEach((num) => {
 opration.forEach((opr) => {
     opr.addEventListener("click",(e) => {
 
-        // Start Top Opration
+        // if Screen.innertHtml Is result
+        if (screenSolut != true) {
+            // Start Top Opration
 
-        // List Top Opration
-        let listTopOpr = ["back","C","CE"];
-        // If Opr In List Top Oprtion : 
-        if (listTopOpr.includes(e.target.dataset.opr)) {
-            // If Opr Is "Back":
-            if (e.target.dataset.opr == "back") {
-                // If Screen Not Empty
-                if (screen.innerHTML != "") {
-                    // If Dot Was Deleted 
-                    if (screen.innerHTML[screen.innerHTML.length - 1] == ".") {
-                        dot = false
-                    }
 
-                    //  If Number has "-" in First
-                    if (screen.innerHTML[0] == "-" && screen.innerHTML.length == 2) {
-                        screen.innerHTML = ""
-                    }else {
-                        screen.innerHTML = screen.innerHTML.slice(0,screen.innerHTML.length - 1)
+
+            // List Top Opration
+            let listTopOpr = ["back","C","CE"];
+            // If Opr In List Top Oprtion : 
+            if (listTopOpr.includes(e.target.dataset.opr)) {
+                // If Opr Is "Back":
+                if (e.target.dataset.opr == "back") {
+                    // If Screen Not Empty
+                    if (screen.innerHTML != "") {
+                        // If Dot Was Deleted 
+                        if (screen.innerHTML[screen.innerHTML.length - 1] == ".") {
+                            dot = false
+                        }
+
+                        //  If Number has "-" in First
+                        if (screen.innerHTML[0] == "-" && screen.innerHTML.length == 2) {
+                            screen.innerHTML = ""
+                        }else {
+                            screen.innerHTML = screen.innerHTML.slice(0,screen.innerHTML.length - 1)
+                        }
+                        
                     }
+                }
+                // If Opr is "C" 
+                if (e.target.dataset.opr == "C") {
+                    screen.innerHTML = ""
+                    dot = false;
+                    screenSolut = false;
                     
                 }
-            }
-
-            // If Opr Os "C" 
-            if (e.target.dataset.opr == "C") {
-                screen.innerHTML = ""
-            }
-
-
-        // Start Left Opration 
-        }else {
-
-
-            // If Screnn Not Empty :
-            
-            if (screen.innerHTML != "") {
-
-                // If btn Opr Not Eqale "=""
-                if (e.target.dataset.opr != "=") {
-                    // Add The Number and The Opr To spanOpr :
-    
-                    spOpr.innerHTML += `${screen.innerHTML} ${e.target.dataset.opr} `
-
-                    // Clear Screen 
-                    screen.innerHTML = ""; 
-                }
-
-                // if btn Opr Is Eqale "=" 
-                if (e.target.dataset.opr == "=" && spOpr.innerHTML != "") {
-                    spOpr.innerHTML += screen.innerHTML;
-                    console.log(getSolution(spOpr.innerHTML))
+                // If Opr is "C" 
+                if (e.target.dataset.opr == "CE") {
                     screen.innerHTML = "";
+                    spOpr.innerHTML = "";
+                    dot = false;
+                    screenSolut = false
                 }
 
-            }
 
+            // Start Left Opration 
+            }else {
+
+
+                // If Screnn Not Empty :
+                
+                if (screen.innerHTML != "") {
+
+                    // If btn Opr Not Eqale "=""
+                    if (e.target.dataset.opr != "=") {
+                        // Add The Number and The Opr To spanOpr :
+        
+                        spOpr.innerHTML += `${screen.innerHTML} ${e.target.dataset.opr} `
+
+                        // Clear Screen 
+                        screen.innerHTML = ""; 
+                    }
+
+                    // if btn Opr Is Eqale "=" 
+                    if (e.target.dataset.opr == "=" && spOpr.innerHTML != "") {
+                        if (screenSolut != true) {
+                            screenSolut = true;
+                            spOpr.innerHTML += screen.innerHTML;
+                            screen.innerHTML = getSolution(spOpr.innerHTML)
+                        }
+                        
+                    }
+
+                }
+
+
+            }
 
         }
 
@@ -146,8 +172,6 @@ opration.forEach((opr) => {
 
 function getSolution(allOpr) {
     let str  = allOpr.split(" ")
-    let allMultbly = [];
-    let allDiv  = [];
     for (let i = 0 ; i < str.length ; i++) {
         if (str[i] == "x") {
             if (str[i - 1] == null && i != 0) {
@@ -172,16 +196,27 @@ function getSolution(allOpr) {
         }
     }
     let result = 0 ;
+    
     let filterStr = str.filter((ch) => ch != null);
-    filterStr.map((ele,index) => {
-
-        if (ele == "+") {
-            result += parseFloat(filterStr[index - 1]) + parseFloat(filterStr[index + 1])
-        }else if (ele == "-") {
-            result += parseFloat(filterStr[index - 1]) - parseFloat(filterStr[index + 1])
+    let lastFilter = filterStr.map((ele,index) => {
+        
+        if (result == 0) {
+            if (ele == "+") {
+                result += parseFloat(filterStr[index - 1]) + parseFloat(filterStr[index + 1])
+                
+            }else if (ele == "-") {
+                result += parseFloat(filterStr[index - 1]) - parseFloat(filterStr[index + 1])
+            }
+        }else {
+            if (ele == "+") {
+                result += parseFloat(filterStr[index + 1])
+                
+            }else if (ele == "-") {
+                result -= parseFloat(filterStr[index + 1])
+            }
         }
     })
-
+    console.log(filterStr)
     return result;
     
 }
