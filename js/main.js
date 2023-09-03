@@ -172,51 +172,76 @@ opration.forEach((opr) => {
 
 function getSolution(allOpr) {
     let str  = allOpr.split(" ")
-    for (let i = 0 ; i < str.length ; i++) {
-        if (str[i] == "x") {
-            if (str[i - 1] == null && i != 0) {
-                str[i] = `${parseFloat(str[i - 2]) * parseFloat(str[i + 1])}`
-                str[i - 2] = null;
-            }else {
-                str[i] = `${parseFloat(str[i - 1]) * parseFloat(str[i + 1])}`
-                str[i - 1] = null;
+    // If Opr Has
+    if (str.includes("x") ||str.includes("%")) {
+        for (let i = 0 ; i < str.length ; i++) {
+            if (str[i] == "x") {
+                if (str[i - 1] == null && i != 0) {
+                    str[i] = `${parseFloat(str[i - 2]) * parseFloat(str[i + 1])}`
+                    str[i - 2] = null;
+                }else {
+                    str[i] = `${parseFloat(str[i - 1]) * parseFloat(str[i + 1])}`
+                    str[i - 1] = null;
+                }
+                str[i + 1] = null ;
+                
             }
-            str[i + 1] = null ;
-            
-        }
-        if (str[i] == "%") {
-            if (str[i - 1] == null && i != 0) {
-                str[i] = `${parseFloat(str[i - 2]) / parseFloat(str[i + 1])}`
-                str[i - 2] = null;
-            }else {
-                str[i] = `${parseFloat(str[i - 1]) / parseFloat(str[i + 1])}`
-                str[i - 1] = null;
+            if (str[i] == "%") {
+                if (str[i - 1] == null && i != 0) {
+                    str[i] = `${parseFloat(str[i - 2]) / parseFloat(str[i + 1])}`
+                    str[i - 2] = null;
+                }else {
+                    str[i] = `${parseFloat(str[i - 1]) / parseFloat(str[i + 1])}`
+                    str[i - 1] = null;
+                }
+                str[i + 1] = null ;
             }
-            str[i + 1] = null ;
         }
-    }
-    let result = 0 ;
-    
-    let filterStr = str.filter((ch) => ch != null);
-    let lastFilter = filterStr.map((ele,index) => {
         
-        if (result == 0) {
-            if (ele == "+") {
-                result += parseFloat(filterStr[index - 1]) + parseFloat(filterStr[index + 1])
-                
-            }else if (ele == "-") {
-                result += parseFloat(filterStr[index - 1]) - parseFloat(filterStr[index + 1])
+        let result = 0 ;
+        
+        let filterStr = str.filter((ch) => ch != null);
+        // If Opr Has All [- or + and * or %]
+        let lastFilter = filterStr.map((ele,index) => {
+            
+            if (result == 0) {
+                if (ele == "+") {
+                    result += parseFloat(filterStr[index - 1]) + parseFloat(filterStr[index + 1])
+                    
+                }else if (ele == "-") {
+                    result += parseFloat(filterStr[index - 1]) - parseFloat(filterStr[index + 1])
+                }
+            }else {
+                if (ele == "+") {
+                    result += parseFloat(filterStr[index + 1])
+                    
+                }else if (ele == "-") {
+                    result -= parseFloat(filterStr[index + 1])
+                }
             }
+        })
+        // If Opr Has All [- or + and * or %]
+        if (result != 0) {
+            return result;
+
+        // If Opr Has Only [x or %]
         }else {
-            if (ele == "+") {
-                result += parseFloat(filterStr[index + 1])
-                
-            }else if (ele == "-") {
-                result -= parseFloat(filterStr[index + 1])
-            }
+            return filterStr[0]
         }
-    })
-    console.log(filterStr)
-    return result;
-    
+
+
+    // If Opr Has Only [+,-]
+    }else  {
+        let result = 0;
+        str.map((ch,index) => {
+            if (ch == "+") {
+                result += parseInt(str[index - 1]) + parseInt(str[index + 1])
+            }
+            if (ch == "-") {
+                result -= parseInt(str[index - 1]) - parseInt(str[index + 1])
+            }
+        })
+
+        return  result
+    }
 }
